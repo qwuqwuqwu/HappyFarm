@@ -1,7 +1,7 @@
 #include <iostream>
 #include "function.h"
 
-template <class T>
+template < class T >
 Node< T >::Node(T x,T y,T fence) :
 x( x ), 
 y( y ), 
@@ -10,7 +10,7 @@ fence( fence )
     // do nothing
 }
 
-template <class T>
+template < class T >
 T Node< T >::compare( T x,T y )
 {
     if( this->x == x && this->y == y) {
@@ -39,6 +39,7 @@ void LinkedList< T >::insert( T x, T y, T fence )
     pNewNode->next = nullptr;
     Node< long long > *pTempNode = nullptr;
     Node< long long > *pLastNode = nullptr;
+    
     // exist first
     if( first != nullptr ) {
         pTempNode = first;
@@ -48,6 +49,8 @@ void LinkedList< T >::insert( T x, T y, T fence )
                     // check fence
                     if( pTempNode->fence == 1 || fence == 1 ) {
                         pTempNode->fence = 1;
+                        delete pNewNode;
+                        pNewNode = nullptr;
                         return;
                     }
                 }
@@ -73,20 +76,10 @@ void LinkedList< T >::insert( T x, T y, T fence )
             // read next node
             pLastNode = pTempNode;
             pTempNode = pTempNode->next;
-            // // tail node is found
-            // if( pTempNode->next == nullptr ) {
-            //     pTempNode->next = pNewNode;
-            //     legnth += 1;
-            //     return;
-            // }
-            // // exist next node
-            // else {
-            //     pTempNode = pTempNode->next;
-            // }
         }
 
+        // last node add to tail
         if( pTempNode == nullptr ) {
-            // add to tail
             pLastNode->next = pNewNode;
             length += 1;
             return;
@@ -105,17 +98,27 @@ void LinkedList< T >::deletion( T x, T y )
     Node< long long > *pTempNode = nullptr;
     Node< long long > *pNextNode = nullptr;
     Node< long long > *pLastNode = nullptr;
+
     // exist first
     if( first != nullptr ) {
         pTempNode = first;
         while( pTempNode != nullptr ) {
+
             // target node is found
             if( pTempNode->compare( x, y ) ) {
+
                 // check fence
                 if( pTempNode->fence == 1 ) {
                     return;
                 }
-                pLastNode->next = pTempNode->next;
+
+                if( pTempNode == first ) {
+                    first = first->next;
+                }
+                else {
+                    pLastNode->next = pTempNode->next;
+                }
+                
                 delete pTempNode;
                 pTempNode = NULL;
                 length -= 1;
@@ -180,11 +183,19 @@ void thief(long long x,long long y)
 
 void superThief(long long x,long long y)
 {
-
+    long long TargetPos[ 9 ][ 2 ] = {   { x - 1, y - 1 }, { x, y - 1 }, { x + 1, y - 1 },
+                                        { x - 1, y }, { x, y }, { x + 1, y },
+                                        { x - 1, y + 1 }, { x, y + 1 }, { x + 1, y + 1 } };
+    for( int i = 0; i < 9; i++ ) {
+        if( TargetPos[ i ][ 0 ] >= -1e10 && TargetPos[ i ][ 0 ] <= 1e10 &&
+            TargetPos[ i ][ 1 ] >= -1e10 && TargetPos[ i ][ 1 ] <= 1e10 ) {
+                g_Plant.deletion( TargetPos[ i ][ 0 ], TargetPos[ i ][ 1 ] );
+        }
+    }
 }
 
 void display()
 {
-    printf( "DISPLAY\n" );
+    printf( "Display\n" );
     g_Plant.show();
 }
