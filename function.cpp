@@ -2,18 +2,19 @@
 #include "function.h"
 
 template < class T >
-Node< T >::Node(T x,T y,T fence) :
+Node< T >::Node( T x, T y, T fence) :
 x( x ), 
 y( y ), 
 fence( fence )
 {
+    this->next = nullptr;
     // do nothing
 }
 
 template < class T >
-T Node< T >::compare( T x,T y )
+T Node< T >::compare( T x, T y )
 {
-    if( this->x == x && this->y == y) {
+    if( this->x == x && this->y == y ) {
         return ( T )( true ); // true
     }
     else{
@@ -36,47 +37,56 @@ template < class T >
 void LinkedList< T >::insert( T x, T y, T fence )
 {
     Node< long long > *pNewNode = new Node< long long >( x, y, fence );
-    pNewNode->next = nullptr;
     Node< long long > *pTempNode = nullptr;
     Node< long long > *pLastNode = nullptr;
     
     // exist first
-    if( first != nullptr ) {
-        pTempNode = first;
-        while( pTempNode != nullptr ) {
-            if( pTempNode->x == x ) {
-                if( pTempNode->y == y ) {
-                    // check fence
-                    if( pTempNode->fence == 1 || fence == 1 ) {
-                        pTempNode->fence = 1;
-                        delete pNewNode;
-                        pNewNode = nullptr;
-                        return;
-                    }
+    // no node in linkedlist
+    if( first == nullptr ) {
+        first = pNewNode;
+        length += 1;
+        return;
+    }
+
+    // exist first node
+    pTempNode = first;
+    while( pTempNode != nullptr ) {
+        // same row
+        if( pTempNode->x == x ) {
+
+            if( pTempNode->y == y ) {
+                // check fence
+                if( pTempNode->fence == 1 || fence == 1 ) {
+                    pTempNode->fence = 1;
                 }
-                else if( pTempNode->y > y ) {
-                    // add between last and temp
-                    pNewNode->next = pTempNode;
-                    pLastNode->next = pNewNode;
-                    length += 1;
-                    return;
-                }
-                else {
-                    // read next node
-                }
-            }
-            else if( pTempNode-> x > x ) {
-                // add betwee last and temp
-                pNewNode->next = pTempNode;
-                pLastNode->next = pNewNode;
-                length += 1;
+
+                // delete new node
+                delete pNewNode;
+                pNewNode = nullptr;
                 return;
             }
-
-            // read next node
-            pLastNode = pTempNode;
-            pTempNode = pTempNode->next;
+            // else if( pTempNode->y > y ) {
+            //     // add between last and temp
+            //     pNewNode->next = pTempNode; // pTemp is next node of target node
+            //     pLastNode->next = pNewNode;
+            //     length += 1;
+            //     return;
+            // }
+            else {
+                // read next node
+            }
         }
+        else if( pTempNode-> x > x ) {
+            // add betwee last and temp
+            pNewNode->next = pTempNode; // pTemp is next node of target node
+            pLastNode->next = pNewNode;
+            length += 1;
+            return;
+        }
+
+        // read next node
+        pLastNode = pTempNode;
+        pTempNode = pTempNode->next;
 
         // last node add to tail
         if( pTempNode == nullptr ) {
@@ -84,11 +94,6 @@ void LinkedList< T >::insert( T x, T y, T fence )
             length += 1;
             return;
         }
-    }
-    // no node in linkedlist
-    {
-        first = pNewNode;
-        length += 1;
     }
 }
 
@@ -99,45 +104,43 @@ void LinkedList< T >::deletion( T x, T y )
     Node< long long > *pNextNode = nullptr;
     Node< long long > *pLastNode = nullptr;
 
-    // exist first
-    if( first != nullptr ) {
-        pTempNode = first;
-        while( pTempNode != nullptr ) {
+    // no data in linkedlist
+    if( first == nullptr ) {
+        length = 0;
+        return;
+    }
+    pTempNode = first;
+    while( pTempNode != nullptr ) {
 
-            // target node is found
-            if( pTempNode->compare( x, y ) ) {
+        // target node is found
+        if( pTempNode->compare( x, y ) == ( long long )( true ) ) {
 
-                // check fence
-                if( pTempNode->fence == 1 ) {
-                    return;
-                }
-
-                if( pTempNode == first ) {
-                    first = first->next;
-                }
-                else {
-                    pLastNode->next = pTempNode->next;
-                }
-                
-                delete pTempNode;
-                pTempNode = NULL;
-                length -= 1;
+            // check fence
+            if( pTempNode->fence == 1 ) {
                 return;
             }
-            // exam next node
-            else {
-                if( pTempNode->x > x ) {
-                    return;
-                }
-                pLastNode = pTempNode;
-                pTempNode = pTempNode->next;
+
+            if( pTempNode == first ) {
+                first = first->next;
             }
+            else {
+                pLastNode->next = pTempNode->next;
+            }
+            
+            delete pTempNode;
+            pTempNode = NULL;
+            length -= 1;
+            return;
         }
-    }
-    // no node in linkedlist
-    {
-        //assert( false );
-        return;
+        // check next node
+        else {
+            // skip
+            if( pTempNode->x > x ) {
+                return;
+            }
+            pLastNode = pTempNode;
+            pTempNode = pTempNode->next;
+        }
     }
 }
 
@@ -148,12 +151,12 @@ void LinkedList< T >::show()
     Node< long long > *pTempNode;
     pTempNode = first;
     while( pTempNode != nullptr ) {
+        printf( "(%lld,%lld)\n", pTempNode->x, pTempNode->y );
         if( pTempNode->next == nullptr ) {
-            printf( "(%lld,%lld)\n", pTempNode->x, pTempNode->y );
             return;
         }
         else {
-            printf( "(%lld,%lld)\n", pTempNode->x, pTempNode->y );
+            // advance one tick
             pTempNode = pTempNode->next;
         }
     }
@@ -164,31 +167,33 @@ template class LinkedList< long long >;
 LinkedList< long long > g_Plant;
 
 // =========================
-void plant(long long x,long long y,int withFence)
+void plant( long long x, long long y, int withFence )
 {
     // insert by row, col
     g_Plant.insert( x, y, withFence );
 }
 
-void thief(long long x,long long y)
+void thief( long long x, long long y )
 {
-    long long TargetPos[ 5 ][ 2 ] = { { x, y - 1 }, { x - 1, y }, { x, y }, { x + 1, y }, { x, y + 1 } };
+    long long TargetPos[ 5 ][ 2 ] = {   { x     , y - 1 },
+                                        { x - 1 , y     }, { x  , y }, { x + 1, y },
+                                        { x     , y + 1 } };
     for( int i = 0; i < 5; i++ ) {
-        if( TargetPos[ i ][ 0 ] >= -1e10 && TargetPos[ i ][ 0 ] <= 1e10 &&
-            TargetPos[ i ][ 1 ] >= -1e10 && TargetPos[ i ][ 1 ] <= 1e10 ) {
+        if( TargetPos[ i ][ 0 ] > -1e10 && TargetPos[ i ][ 0 ] < 1e10 &&
+            TargetPos[ i ][ 1 ] > -1e10 && TargetPos[ i ][ 1 ] < 1e10 ) {
                 g_Plant.deletion( TargetPos[ i ][ 0 ], TargetPos[ i ][ 1 ] );
         }
     }
 }
 
-void superThief(long long x,long long y)
+void superThief( long long x, long long y )
 {
-    long long TargetPos[ 9 ][ 2 ] = {   { x - 1, y - 1 }, { x, y - 1 }, { x + 1, y - 1 },
-                                        { x - 1, y }, { x, y }, { x + 1, y },
-                                        { x - 1, y + 1 }, { x, y + 1 }, { x + 1, y + 1 } };
+    long long TargetPos[ 9 ][ 2 ] = {   {   x - 1, y - 1 }, { x, y - 1 }, { x + 1, y - 1 },
+                                        {   x - 1, y     }, { x, y     }, { x + 1, y     },
+                                        {   x - 1, y + 1 }, { x, y + 1 }, { x + 1, y + 1 } };
     for( int i = 0; i < 9; i++ ) {
-        if( TargetPos[ i ][ 0 ] >= -1e10 && TargetPos[ i ][ 0 ] <= 1e10 &&
-            TargetPos[ i ][ 1 ] >= -1e10 && TargetPos[ i ][ 1 ] <= 1e10 ) {
+        if( TargetPos[ i ][ 0 ] > -1e10 && TargetPos[ i ][ 0 ] < 1e10 &&
+            TargetPos[ i ][ 1 ] > -1e10 && TargetPos[ i ][ 1 ] < 1e10 ) {
                 g_Plant.deletion( TargetPos[ i ][ 0 ], TargetPos[ i ][ 1 ] );
         }
     }
