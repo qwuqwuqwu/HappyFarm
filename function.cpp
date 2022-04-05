@@ -52,9 +52,9 @@ void LinkedList< T >::insert( T x, T y, T fence )
     pTempNode = first;
     while( pTempNode != nullptr ) {
         // same row
-        if( pTempNode->x == x ) {
+        if( pTempNode->y == y ) {
 
-            if( pTempNode->y == y ) {
+            if( pTempNode->x == x ) {
                 // check fence
                 if( pTempNode->fence == 1 || fence == 1 ) {
                     pTempNode->fence = 1;
@@ -65,21 +65,33 @@ void LinkedList< T >::insert( T x, T y, T fence )
                 pNewNode = nullptr;
                 return;
             }
-            // else if( pTempNode->y > y ) {
-            //     // add between last and temp
-            //     pNewNode->next = pTempNode; // pTemp is next node of target node
-            //     pLastNode->next = pNewNode;
-            //     length += 1;
-            //     return;
-            // }
+            else if( pTempNode->x > x ) {
+                // add between last and temp
+                if( pTempNode == first ) {
+                    pNewNode->next = pTempNode;
+                    first = pNewNode;
+                }
+                else {
+                    pNewNode->next = pTempNode; // pTemp is next node of target node
+                    pLastNode->next = pNewNode;
+                }
+                length += 1;
+                return;
+            }
             else {
                 // read next node
             }
         }
-        else if( pTempNode-> x > x ) {
+        else if( pTempNode->y > y ) {
             // add betwee last and temp
-            pNewNode->next = pTempNode; // pTemp is next node of target node
-            pLastNode->next = pNewNode;
+            if( pTempNode == first ) {
+                pNewNode->next = pTempNode;
+                first = pNewNode;
+            }
+            else {
+                pNewNode->next = pTempNode; // pTemp is next node of target node
+                pLastNode->next = pNewNode;
+            }
             length += 1;
             return;
         }
@@ -109,17 +121,20 @@ void LinkedList< T >::deletion( T x, T y )
         length = 0;
         return;
     }
+
     pTempNode = first;
     while( pTempNode != nullptr ) {
 
         // target node is found
-        if( pTempNode->compare( x, y ) == ( long long )( true ) ) {
+        if( pTempNode->y == y && pTempNode->x == x ) {
+        //if( pTempNode->compare( x, y ) == ( long long )( true ) ) {
 
             // check fence
             if( pTempNode->fence == 1 ) {
                 return;
             }
 
+            // replace Temp
             if( pTempNode == first ) {
                 first = first->next;
             }
@@ -135,7 +150,7 @@ void LinkedList< T >::deletion( T x, T y )
         // check next node
         else {
             // skip
-            if( pTempNode->x > x ) {
+            if( pTempNode->y > y ) {
                 return;
             }
             pLastNode = pTempNode;
